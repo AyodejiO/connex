@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  api:
+    restart: unless-stopped
+    # image: api:latest
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    ports:
+      - 4000:3000
+    volumes:
+      - ./api:/user/src/app
+    command: yarn watch
+    tty: true
+    stdin_open: true
+
+  ui:
+    restart: unless-stopped
+    # image: ui:latest
+    build:
+      context: ./ui
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:3000
+    volumes:
+      - ./client:/usr/src/app
+    links:
+      - api
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000/
+      - REACT_APP_API_KEY=mysecrettoken
+    command: yarn start
+    tty: true
+    stdin_open: true
+
